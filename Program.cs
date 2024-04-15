@@ -22,11 +22,11 @@ while(true)
 
     movements.Add(new Movement(movements.Count > 0 ? movements.Last() :new Movement(), quantity, itemCost));
     
-    Table table = new Table("Type", "Quantity", "Cost", "StkBefore", "StockAfter", "AveCost Before", "AveCost After", "NomValue Before", "NomValue After", "NomAdjustment", "NomValueAfAdj", "Expected NomValue", "IsCorrect?");
+    Table table = new Table("Type", "Quantity", "Cost", "StkBefore", "StckAfter", "AveCost Before", "AveCost After", "NomValueBefore", "NomValueAfter", "NomAdjustment", "NomValueAfAdj", "ExpNomValue", "IsCorrect?");
     
     foreach (var movement in movements)
     {
-       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost, movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore, movement.AverageCostAfter, movement.NominalValueBefore, movement.NominalValueAfter, movement.NominalAdjustment, movement.NominalValueAfterAdjustment, movement.ExpectedNominalValue, movement.IsCorrect);
+       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost.ToString("#.00"), movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore.ToString("#.00"), movement.AverageCostAfter.ToString("#.00"), movement.NominalValueBefore.ToString("#.00"), movement.NominalValueAfter, movement.NominalAdjustment.ToString("#.00"), movement.NominalValueAfterAdjustment.ToString("#.00"), movement.ExpectedNominalValue.ToString("#.00"), movement.IsCorrect);
     }
 
     table.Print();

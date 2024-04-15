@@ -18,11 +18,33 @@ while(true)
     }
     var arguments = line.Split(',');
     var quantity = decimal.Parse(arguments[0]);
-    var itemCost = decimal.Parse(arguments[1]);
+    decimal itemCost;
+    if(arguments.Length > 1)
+    {
+        itemCost = decimal.Parse(arguments[1]);
+        movements.Add(new Movement(movements.Count > 0 ? movements.Last() : new Movement(), quantity, itemCost));
+    }
+    else
+    {
+        if(movements.Count == 0)
+        {
+            Console.WriteLine("You must provide an item cost for the first movement.");
+            continue;
+        }
+        if(quantity > 0)
+        {
+            Console.WriteLine("You must provide an item cost for a receipt.");
+            continue;
+        }
+        else
+        {
+            movements.Add(new Movement(movements.Count > 0 ? movements.Last() : new Movement(), quantity, movements.Last().AverageCostAfter));
+        }
 
-    movements.Add(new Movement(movements.Count > 0 ? movements.Last() :new Movement(), quantity, itemCost));
-    
-    Table table = new Table("Type", "Quantity", "Cost", "StkBefore", "StckAfter", "AveCost Before", "AveCost After", "NomValueBefore", "NomValueAfter", "NomAdjustment", "NomValueAfAdj", "ExpNomValue", "IsCorrect?");
+    }
+
+
+    Table table = new Table("Type", "Quantity", "Cost", "StkBefore", "StkAfter", "AveCost Before", "AveCost After", "NomValueBefore", "NomValueAfter", "NomAdjustment", "NomValueAfAdj", "ExpNomValue", "IsCorrect?");
     
     foreach (var movement in movements)
     {

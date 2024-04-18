@@ -48,7 +48,7 @@ while(true)
     
     foreach (var movement in movements)
     {
-       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost.ToString("#.00"), movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore.ToString("#.00"), movement.AverageCostAfter.ToString("#.00"), movement.NominalValueBefore.ToString("#.00"), movement.NominalValueAfter, movement.NominalAdjustment.ToString("#.00"), movement.NominalValueAfterAdjustment.ToString("#.00"), movement.ExpectedNominalValue.ToString("#.00"), movement.IsCorrect);
+       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost.ToString("0.00"), movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore.ToString("0.00"), movement.AverageCostAfter.ToString("0.00"), movement.NominalValueBefore.ToString("0.00"), movement.NominalValueAfter, movement.NominalAdjustment.ToString("0.00"), movement.NominalValueAfterAdjustment.ToString("0.00"), movement.ExpectedNominalValue.ToString("0.00"), movement.IsCorrect);
     }
 
     table.Print();

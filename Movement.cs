@@ -54,7 +54,7 @@ public class Movement
             }
             else
             {
-                AverageCostAfter = 0;
+                AverageCostAfter = ItemCost;
             }
 
         }

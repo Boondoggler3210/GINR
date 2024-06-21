@@ -11,19 +11,23 @@ public class Movement
     public decimal StockQuantityAfter { get; set; }    
     public decimal AverageCostBefore { get; set; }
     public decimal AverageCostAfter { get; set; }
+    public decimal UnroundedAverageCostAfter { get; set; }
     public decimal NominalValueBefore { get; set; }
     public decimal NominalValueAfter { get; set; }
-    public decimal NominalAdjustment { get; set; }
+    public decimal GINRNominalAdjustment { get; set; }
+    public decimal CurrencyRoundingNominalAdjustment { get; set; }
     public decimal NominalValueAfterAdjustment { get; set; }   
     public decimal ExpectedNominalValue { get; set; }
-    public bool IsCorrect => NominalValueAfterAdjustment == ExpectedNominalValue;
+    public bool IsCorrect => NominalValueAfterAdjustment == (StockQuantityAfter * AverageCostAfter);
+    public int DecimalPrecision { get; set; } = 2;
     public Movement()
     {
 
     }
 
-    public Movement(Movement previousMovement, decimal quantity, decimal itemCost)
+    public Movement(Movement previousMovement, decimal quantity, decimal itemCost, int decimalPrecision)
     {
+        DecimalPrecision = decimalPrecision;
         Type = quantity > 0 ? "Receipt" : "Issue";
         Quantity = quantity;
         ItemCost = itemCost;
@@ -34,13 +38,14 @@ public class Movement
         CalculateAverageCost();
 
         NominalValueBefore = previousMovement.NominalValueAfterAdjustment;
-        NominalValueAfter = NominalValueBefore + (quantity * itemCost);
+        NominalValueAfter = Math.Round((NominalValueBefore + (quantity * itemCost)), DecimalPrecision, MidpointRounding.AwayFromZero);
 
-        CalculateNominalAdjustment();
+        CalculateGINRNominalAdjustment();
+        CalculateCurrencyRoundingNominalAdjustment();
 
-        NominalValueAfterAdjustment = NominalValueAfter + NominalAdjustment;
+        NominalValueAfterAdjustment = NominalValueAfter + GINRNominalAdjustment + CurrencyRoundingNominalAdjustment;
 
-        ExpectedNominalValue = StockQuantityAfter * AverageCostAfter;
+        ExpectedNominalValue = Math.Round((StockQuantityAfter * UnroundedAverageCostAfter), DecimalPrecision, MidpointRounding.AwayFromZero);
 
     }
 
@@ -50,32 +55,38 @@ public class Movement
         {
             if(StockQuantityAfter != 0)
             {
-                AverageCostAfter = ((StockQuantityBefore * AverageCostBefore) + (Quantity * ItemCost)) / StockQuantityAfter;
-            }
-            else
-            {
-                AverageCostAfter = ItemCost;
+                UnroundedAverageCostAfter = ((StockQuantityBefore * AverageCostBefore) + (Quantity * ItemCost)) / StockQuantityAfter;
+                AverageCostAfter = Math.Round(UnroundedAverageCostAfter, DecimalPrecision, MidpointRounding.AwayFromZero);
+                return AverageCostAfter;
             }
 
-        }
-        else
-        {
-            AverageCostAfter = ItemCost;
-        }
+            return AverageCostAfter = Math.Round(ItemCost, DecimalPrecision, MidpointRounding.AwayFromZero);
 
+        }
+        UnroundedAverageCostAfter = ItemCost;
+        AverageCostAfter = Math.Round(ItemCost,DecimalPrecision, MidpointRounding.AwayFromZero);
+        
         return AverageCostAfter;
     }
-    private decimal CalculateNominalAdjustment()
+    private decimal CalculateGINRNominalAdjustment()
     {
         if(StockQuantityBefore < 0)
         {
-            NominalAdjustment = (StockQuantityBefore * AverageCostAfter) - (StockQuantityBefore * AverageCostBefore);
+            GINRNominalAdjustment = (StockQuantityBefore * AverageCostAfter) - (StockQuantityBefore * AverageCostBefore);
         }
         else
         {
-            NominalAdjustment = 0;
+            GINRNominalAdjustment = 0;
         }
 
-        return NominalAdjustment;
+        return Math.Round(GINRNominalAdjustment, DecimalPrecision, MidpointRounding.AwayFromZero);
+    }
+
+    private decimal CalculateCurrencyRoundingNominalAdjustment()
+    {
+  
+        CurrencyRoundingNominalAdjustment = Math.Round(((StockQuantityAfter * AverageCostAfter) - (StockQuantityAfter * UnroundedAverageCostAfter)), DecimalPrecision, MidpointRounding.AwayFromZero);
+
+        return CurrencyRoundingNominalAdjustment;
     }
 }

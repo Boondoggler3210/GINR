@@ -1,11 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.ComponentModel;
-using GINR;
+﻿using GINR;
 
 Console.WriteLine("Hello, World!");
 
 List<Movement> movements = new List<Movement>();
-
+Console.WriteLine("Enter the number of decimal places to work to:");
+var decimalPrecision = int.Parse(Console.ReadLine());
 Console.WriteLine("Add a movement in the format \"quantity, item cost\" where quantity is a positive number for a receipt and a negative number for an issue.");
 Console.WriteLine("Example: 5, 100");
 while(true)
@@ -22,7 +21,7 @@ while(true)
     if(arguments.Length > 1)
     {
         itemCost = decimal.Parse(arguments[1]);
-        movements.Add(new Movement(movements.Count > 0 ? movements.Last() : new Movement(), quantity, itemCost));
+        movements.Add(new Movement(movements.Count > 0 ? movements.Last() : new Movement(), quantity, itemCost, decimalPrecision));
     }
     else
     {
@@ -38,17 +37,17 @@ while(true)
         }
         else
         {
-            movements.Add(new Movement(movements.Count > 0 ? movements.Last() : new Movement(), quantity, movements.Last().AverageCostAfter));
+            movements.Add(new Movement(movements.Count > 0 ? movements.Last() : new Movement(), quantity, movements.Last().AverageCostAfter, decimalPrecision));
         }
 
     }
 
 
-    Table table = new Table("Type", "Quantity", "Cost", "StkBefore", "StkAfter", "AveCost Before", "AveCost After", "NomValueBefore", "NomValueAfter", "NomAdjustment", "NomValueAfAdj", "ExpNomValue", "IsCorrect?");
+    Table table = new Table("Type", "Quantity", "Cost", "StkBefore", "StkAfter", "AveCost Before", "AveCost After", "NomValueBefore", "NomValueAfter", "GINRNomAdjustment", "CurRoundedNomAdjust", "ExpNomValueBeforeCurAdj", "PartValuation", "NomValueAfAdjs", "IsCorrect?");
     
     foreach (var movement in movements)
     {
-       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost.ToString("0.00"), movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore.ToString("0.00"), movement.AverageCostAfter.ToString("0.00"), movement.NominalValueBefore.ToString("0.00"), movement.NominalValueAfter, movement.NominalAdjustment.ToString("0.00"), movement.NominalValueAfterAdjustment.ToString("0.00"), movement.ExpectedNominalValue.ToString("0.00"), movement.IsCorrect);
+       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost, movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore, movement.AverageCostAfter, movement.NominalValueBefore, movement.NominalValueAfter, movement.GINRNominalAdjustment, movement.CurrencyRoundingNominalAdjustment, movement.ExpectedNominalValue, movement.StockQuantityAfter*movement.AverageCostAfter, movement.NominalValueAfterAdjustment, movement.IsCorrect );
     }
 
     table.Print();

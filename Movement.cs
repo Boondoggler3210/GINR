@@ -73,7 +73,15 @@ public class Movement
     {
         if(StockQuantityBefore < 0)
         {
-            GINRNominalAdjustment = (StockQuantityBefore * AverageCostAfter) - (StockQuantityBefore * AverageCostBefore);
+            GINRNominalAdjustment = Math.Round((StockQuantityBefore * AverageCostAfter) - (StockQuantityBefore * AverageCostBefore), DecimalPrecision, MidpointRounding.AwayFromZero);
+            decimal fractionalPartAdjustment = (StockQuantityAfter * AverageCostAfter) % 1;
+            decimal fractionalReceiptAdjustment  = (Quantity * ItemCost) % 1;
+
+            if ( Math.Abs(fractionalPartAdjustment) >= 0.5m && Math.Abs(fractionalReceiptAdjustment) >= 0.5m)
+            {
+                GINRNominalAdjustment += Math.Round(fractionalPartAdjustment, DecimalPrecision, MidpointRounding.AwayFromZero);
+            }
+            //GINRNominalAdjustment = (Math.Round(StockQuantityBefore * AverageCostAfter, DecimalPrecision, MidpointRounding.AwayFromZero)) - (Math.Round(StockQuantityBefore * AverageCostBefore, DecimalPrecision,MidpointRounding.AwayFromZero));
         }
         else
         {

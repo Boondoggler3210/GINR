@@ -18,7 +18,7 @@ public class Movement
     public decimal CurrencyRoundingNominalAdjustment { get; set; }
     public decimal NominalValueAfterAdjustment { get; set; }   
     public decimal ExpectedNominalValue { get; set; }
-    public bool IsCorrect => NominalValueAfterAdjustment == (StockQuantityAfter * AverageCostAfter);
+    public bool IsCorrect { get; set; }
     public int DecimalPrecision { get; set; } = 2;
     public Movement()
     {
@@ -38,7 +38,7 @@ public class Movement
         CalculateAverageCost();
 
         NominalValueBefore = previousMovement.NominalValueAfterAdjustment;
-        NominalValueAfter = Math.Round((NominalValueBefore + (quantity * itemCost)), DecimalPrecision, MidpointRounding.AwayFromZero);
+        NominalValueAfter = Math.Round((NominalValueBefore + Math.Round((quantity * itemCost), DecimalPrecision, MidpointRounding.AwayFromZero)), DecimalPrecision, MidpointRounding.AwayFromZero);
 
         CalculateGINRNominalAdjustment();
         CalculateCurrencyRoundingNominalAdjustment();
@@ -46,6 +46,7 @@ public class Movement
         NominalValueAfterAdjustment = NominalValueAfter + GINRNominalAdjustment + CurrencyRoundingNominalAdjustment;
 
         ExpectedNominalValue = Math.Round((StockQuantityAfter * UnroundedAverageCostAfter), DecimalPrecision, MidpointRounding.AwayFromZero);
+        IsCorrect =  NominalValueAfterAdjustment == Math.Round((StockQuantityAfter * AverageCostAfter), DecimalPrecision, MidpointRounding.AwayFromZero);
 
     }
 
@@ -55,7 +56,7 @@ public class Movement
         {
             if(StockQuantityAfter != 0)
             {
-                UnroundedAverageCostAfter = ((StockQuantityBefore * AverageCostBefore) + (Quantity * ItemCost)) / StockQuantityAfter;
+                UnroundedAverageCostAfter = ((StockQuantityBefore * AverageCostBefore) + Math.Round((Quantity * ItemCost),DecimalPrecision,MidpointRounding.AwayFromZero)) / StockQuantityAfter;
                 AverageCostAfter = Math.Round(UnroundedAverageCostAfter, DecimalPrecision, MidpointRounding.AwayFromZero);
                 return AverageCostAfter;
             }
@@ -84,9 +85,13 @@ public class Movement
 
     private decimal CalculateCurrencyRoundingNominalAdjustment()
     {
-  
-        CurrencyRoundingNominalAdjustment = Math.Round(((StockQuantityAfter * AverageCostAfter) - (StockQuantityAfter * UnroundedAverageCostAfter)), DecimalPrecision, MidpointRounding.AwayFromZero);
+        decimal stockValueAtRoundedAverage = Math.Round(StockQuantityAfter * AverageCostAfter, DecimalPrecision, MidpointRounding.AwayFromZero);
+        decimal stockValueAtUnroundedAverage = Math.Round(StockQuantityAfter * UnroundedAverageCostAfter, DecimalPrecision, MidpointRounding.AwayFromZero);
+
+        CurrencyRoundingNominalAdjustment = Math.Round(((stockValueAtRoundedAverage) - (stockValueAtUnroundedAverage)), DecimalPrecision, MidpointRounding.AwayFromZero);
+
 
         return CurrencyRoundingNominalAdjustment;
+        
     }
 }

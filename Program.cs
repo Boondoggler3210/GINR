@@ -9,6 +9,7 @@ Console.WriteLine("Add a movement in the format \"quantity, item cost\" where qu
 Console.WriteLine("Example: 5, 100");
 while(true)
 {
+    
     Console.WriteLine("Add a movement:");
     var line = Console.ReadLine();
     if(line == "exit")
@@ -42,12 +43,13 @@ while(true)
 
     }
 
+    
 
     Table table = new Table("Type", "Quantity", "Cost", "StkBefore", "StkAfter", "AveCost Before", "AveCost After", "NomValueBefore", "NomValueAfter", "GINRNomAdjustment", "ExpNomValueBeforeCurAdj", "CurRoundedNomAdjust", "NomValueAfAdjs", "PartValuation", "IsCorrect?");
     
     foreach (var movement in movements)
     {
-       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost, movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore, movement.AverageCostAfter, movement.NominalValueBefore, movement.NominalValueAfter, movement.GINRNominalAdjustment, movement.ExpectedNominalValue, movement.CurrencyRoundingNominalAdjustment, movement.NominalValueAfterAdjustment, movement.StockQuantityAfter * movement.AverageCostAfter, movement.IsCorrect );
+       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost, movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore, movement.AverageCostAfter, movement.NominalValueBefore, movement.NominalValueAfter, movement.GINRNominalAdjustment, movement.ExpectedNominalValue, movement.CurrencyRoundingNominalAdjustment, movement.NominalValueAfterAdjustment, Math.Round(movement.StockQuantityAfter * movement.AverageCostAfter, decimalPrecision,MidpointRounding.AwayFromZero), movement.IsCorrect );
     }
 
     table.Print();

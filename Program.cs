@@ -6,7 +6,7 @@ List<Movement> movements = new List<Movement>();
 Console.WriteLine("Enter the number of decimal places to work to:");
 var decimalPrecision = int.Parse(Console.ReadLine());
 Console.WriteLine("Add a movement in the format \"quantity, item cost\" where quantity is a positive number for a receipt and a negative number for an issue.");
-Console.WriteLine("Example: 5, 100");
+Console.WriteLine("Example: 5, 100, y");
 while(true)
 {
     
@@ -18,11 +18,23 @@ while(true)
     }
     var arguments = line.Split(',');
     var quantity = decimal.Parse(arguments[0]);
-    decimal itemCost;
-    if(arguments.Length > 1)
+    decimal itemCost = 0;
+    bool recalculateAverageCostForIssue = false;
+    if (arguments.Length > 1)
     {
-        itemCost = decimal.Parse(arguments[1]);
-        movements.Add(new Movement(movements.Count > 0 ? movements.Last() : new Movement(), quantity, itemCost, decimalPrecision));
+        if (arguments[1] != null)
+        {
+            itemCost = decimal.Parse(arguments[1]);
+
+        }
+
+        if (arguments.Length == 3 && arguments[2].Trim().ToLower() == "y")
+        {
+            recalculateAverageCostForIssue = true;
+        }
+
+        movements.Add(new Movement(movements.Count > 0 ? movements.Last() : new Movement(), quantity, itemCost, decimalPrecision, recalculateAverageCostForIssue));
+
     }
     else
     {

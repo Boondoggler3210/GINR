@@ -4,28 +4,27 @@ namespace GINR;
 
 public class Movement
 {
-    public string Type { get; set; }
-    public decimal Quantity { get; set; }
-    public decimal ItemCost { get; set; }
-    public decimal StockQuantityBefore { get; set; }
-    public decimal StockQuantityAfter { get; set; }
-    public decimal AverageCostBefore { get; set; }
-    public decimal AverageCostAfter { get; set; }
-    public decimal UnroundedAverageCostAfter { get; set; }
-    public decimal NominalValueBefore { get; set; }
-    public decimal NominalValueAfter { get; set; }
-    public decimal GINRNominalAdjustment { get; set; }
-    public decimal CurrencyRoundingNominalAdjustment { get; set; }
-    public decimal NominalValueAfterAdjustment { get; set; }
-    public decimal ExpectedNominalValue { get; set; }
-    public bool IsCorrect { get; set; }
-    public int DecimalPrecision { get; set; } = 2;
-    public bool RecalculateAverageCostForIssue { get; set; }
+    public string Type { get; private set; }
+    public decimal Quantity { get; private set; }
+    public decimal ItemCost { get; private set; }
+    public decimal StockQuantityBefore { get; private set; }
+    public decimal StockQuantityAfter { get; private set; }
+    public decimal AverageCostBefore { get; private set; }
+    public decimal AverageCostAfter { get; private set; }
+    public decimal UnroundedAverageCostAfter { get; private set; }
+    public decimal NominalValueBefore { get; private set; }
+    public decimal NominalValueAfter { get; private set; }
+    public decimal GINRNominalAdjustment { get; private set; }
+    public decimal CurrencyRoundingNominalAdjustment { get; private set; }
+    public decimal NominalValueAfterAdjustment { get; private set; }
+    public decimal ExpectedNominalValue { get; private set; }
+    public bool IsCorrect { get; private set; }
+    public int DecimalPrecision { get; private set; } = 2;
+    public bool RecalculateAverageCostForIssue { get; private set; }
     public Movement()
     {
 
     }
-
     public Movement(Movement previousMovement, decimal quantity, decimal itemCost, int decimalPrecision, bool recalculateAverageCostForIssue = false)
     {
         DecimalPrecision = decimalPrecision;
@@ -34,22 +33,17 @@ public class Movement
         StockQuantityBefore = previousMovement.StockQuantityAfter;
         StockQuantityAfter = previousMovement.StockQuantityAfter + quantity;
         AverageCostBefore = previousMovement.AverageCostAfter;
-        ItemCost = SetItemCost(itemCost, recalculateAverageCostForIssue);
-        RecalculateAverageCostForIssue = SetRecalculateAverageCostForIssue(quantity, recalculateAverageCostForIssue);
-        CalculateAverageCost();
-
+        SetItemCost(itemCost, recalculateAverageCostForIssue);
+        SetRecalculateAverageCostForIssue(quantity, recalculateAverageCostForIssue);
+        CalculateNewAverageCosts();
         NominalValueBefore = previousMovement.NominalValueAfterAdjustment;
         NominalValueAfter = Math.Round((NominalValueBefore + Math.Round((Quantity * ItemCost), DecimalPrecision, MidpointRounding.AwayFromZero)), DecimalPrecision, MidpointRounding.AwayFromZero);
-
         CalculateGINRNominalAdjustment();
         CalculateCurrencyRoundingNominalAdjustment();
-
         NominalValueAfterAdjustment = NominalValueAfter + GINRNominalAdjustment + CurrencyRoundingNominalAdjustment;
-
         ExpectedNominalValue = Math.Round((StockQuantityAfter * UnroundedAverageCostAfter), DecimalPrecision, MidpointRounding.AwayFromZero);
         IsCorrect = NominalValueAfterAdjustment == Math.Round((StockQuantityAfter * AverageCostAfter), DecimalPrecision, MidpointRounding.AwayFromZero);
     }
-
     private decimal SetItemCost(decimal itemCost, bool recalculateAverageForIssue)
     {
         if (Quantity > 0) return ItemCost = itemCost;
@@ -65,7 +59,6 @@ public class Movement
 
         return ItemCost = itemCost;
     }
-
     private bool SetRecalculateAverageCostForIssue(decimal quantity, bool recalculateAverageCostForIssue)
     {
         if (quantity > 0) return RecalculateAverageCostForIssue = false;
@@ -74,8 +67,7 @@ public class Movement
 
         return RecalculateAverageCostForIssue = false;
     }
-
-    private decimal CalculateAverageCost()
+    private decimal CalculateNewAverageCosts()
     {
         if (StockQuantityBefore > 0)
         {
@@ -104,7 +96,6 @@ public class Movement
         }
 
     }
-
     private decimal CalculateCurrencyRoundingNominalAdjustment()
     {
         decimal previousStockValue = Math.Round(StockQuantityBefore * AverageCostBefore, DecimalPrecision, MidpointRounding.AwayFromZero);

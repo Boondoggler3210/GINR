@@ -5,27 +5,40 @@ Console.WriteLine("Hello, World!");
 List<Movement> movements = new List<Movement>();
 Console.WriteLine("Enter the number of decimal places to work to:");
 var decimalPrecision = int.Parse(Console.ReadLine());
-Console.WriteLine("Add a movement in the format \"quantity, item cost\" where quantity is a positive number for a receipt and a negative number for an issue.");
+Console.WriteLine("Add a movement in the format \"quantity, item cost, recalculate Average cost for this issue\" where quantity is a positive number for a receipt and a negative number for an issue.");
 Console.WriteLine("Example: 5, 100, y");
 while(true)
 {
     
     Console.WriteLine("Add a movement:");
     var line = Console.ReadLine();
+    if(String.IsNullOrWhiteSpace(line))
+    {
+        Console.WriteLine("Enter values in the form \"quantity, item cost, recalculate aveCost for this issue\"");
+        continue;
+    }
     if(line == "exit")
     {
         break;
     }
     var arguments = line.Split(',');
-    var quantity = decimal.Parse(arguments[0]);
-    decimal itemCost = 0;
+
+    decimal quantity; 
+    if (decimal.TryParse(arguments[0], out quantity) == false)
+    {
+        Console.WriteLine("The quantity must be a number.");
+        continue;
+    }
+    
+    
+    decimal itemCost;
     bool recalculateAverageCostForIssue = false;
     if (arguments.Length > 1)
     {
-        if (arguments[1] != null)
+        if (decimal.TryParse(arguments[1], out itemCost) == false && quantity > 0)
         {
-            itemCost = decimal.Parse(arguments[1]);
-
+            Console.WriteLine("The item cost must be a number.");
+            continue;
         }
 
         if (arguments.Length == 3 && arguments[2].Trim().ToLower() == "y")

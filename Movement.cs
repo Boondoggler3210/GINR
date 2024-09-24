@@ -4,9 +4,11 @@ namespace GINR;
 
 public class Movement
 {
-    public string Type { get; private set; }
+    public string? Type { get; private set; }
     public decimal Quantity { get; private set; }
     public decimal ItemCost { get; private set; }
+
+    public decimal MovementValue { get; private set; }
     public decimal StockQuantityBefore { get; private set; }
     public decimal StockQuantityAfter { get; private set; }
     public decimal AverageCostBefore { get; private set; }
@@ -34,6 +36,7 @@ public class Movement
         StockQuantityAfter = previousMovement.StockQuantityAfter + quantity;
         AverageCostBefore = previousMovement.AverageCostAfter;
         SetItemCost(itemCost, recalculateAverageCostForIssue);
+        MovementValue = Math.Round((Quantity * ItemCost), DecimalPrecision, MidpointRounding.AwayFromZero);
         SetRecalculateAverageCostForIssue(quantity, recalculateAverageCostForIssue);
         CalculateNewAverageCosts();
         NominalValueBefore = previousMovement.NominalValueAfterAdjustment;

@@ -70,11 +70,11 @@ while(true)
 
     
 
-    Table table = new Table("Type", "Quantity", "Cost", "StkBefore", "StkAfter", "AveCost Before", "AveCost After", "NomValueBefore", "NomValueAfter", "GINRNomAdjustment", "ExpNomValueBeforeCurAdj", "CurRoundedNomAdjust", "NomValueAfAdjs", "PartValuation", "IsCorrect?");
+    Table table = new Table("Type", "Quantity", "Cost", "MvmtValue", "StkBefore", "StkAfter", "AveCost Before", "AveCost After", "NomValueBefore", "NomValueAfter", "GINRNomAdjustment", "ExpNomValueBeforeCurAdj", "CurRoundedNomAdjust", "NomValueAfAdjs", "PartValuation", "IsCorrect?");
     
     foreach (var movement in movements)
     {
-       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost, movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore, movement.AverageCostAfter, movement.NominalValueBefore, movement.NominalValueAfter, movement.GINRNominalAdjustment, movement.ExpectedNominalValue, movement.CurrencyRoundingNominalAdjustment, movement.NominalValueAfterAdjustment, Math.Round(movement.StockQuantityAfter * movement.AverageCostAfter, decimalPrecision,MidpointRounding.AwayFromZero), movement.IsCorrect );
+       table.AddRow(movement.Type, movement.Quantity, movement.ItemCost, movement.MovementValue, movement.StockQuantityBefore, movement.StockQuantityAfter, movement.AverageCostBefore, movement.AverageCostAfter, movement.NominalValueBefore, movement.NominalValueAfter, movement.GINRNominalAdjustment, movement.ExpectedNominalValue, movement.CurrencyRoundingNominalAdjustment, movement.NominalValueAfterAdjustment, Math.Round(movement.StockQuantityAfter * movement.AverageCostAfter, decimalPrecision,MidpointRounding.AwayFromZero), movement.IsCorrect );
     }
 
     table.Print();
